@@ -56,7 +56,7 @@ const Header: React.FC = () => {
           
           <div className="mt-3 flex justify-center md:justify-start space-x-3 animate-fade-in">
             <a
-              href="https://github.com/"
+              href="https://github.com/sashankp123"
               target="_blank"
               rel="noopener noreferrer"
               className="p-1.5 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
@@ -67,7 +67,7 @@ const Header: React.FC = () => {
               </svg>
             </a>
             <a
-              href="https://linkedin.com/in/"
+              href="https://www.linkedin.com/in/sashank-p/"
               target="_blank"
               rel="noopener noreferrer"
               className="p-1.5 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
