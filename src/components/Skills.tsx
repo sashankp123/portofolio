@@ -1,207 +1,191 @@
 import React, { useState } from 'react';
-import { FaJs, FaPython, FaDatabase, FaReact, FaAngular, FaHtml5, FaCss3Alt, FaNodeJs, FaDocker } from 'react-icons/fa';
-import { SiTailwindcss, SiExpress, SiNestjs, SiPostgresql, SiMongodb, SiMysql } from 'react-icons/si';
+import {
+  FaJs, FaPython, FaDatabase, FaReact, FaNodeJs, FaDocker, FaAws, FaBrain, FaRobot,
+} from 'react-icons/fa';
+import {
+  SiTailwindcss, SiNestjs, SiPostgresql, SiMongodb, SiTypescript,
+  SiNextdotjs, SiKubernetes, SiGithubactions, SiCypress, SiVitest,
+  SiJest, SiVite, SiFastapi, SiTerraform, SiRedis, SiMysql, SiOracle,
+  SiOpenai, SiLangchain, SiHuggingface, SiPytest,
+} from 'react-icons/si';
 import { AiOutlineApi } from 'react-icons/ai';
+import { useReveal } from '../hooks/useReveal';
 
-interface SkillTileProps {
+interface Skill {
   name: string;
   icon: React.ReactNode;
   color: string;
 }
 
-const SkillTile: React.FC<SkillTileProps> = ({ name, icon, color }) => {
-  // Generate a lighter version of the color for the gradient
-  const getGradientStyle = () => {
-    return {
-      background: `linear-gradient(135deg, ${color} 0%, ${color}80 100%)`,
-    };
-  };
-  
+const allCategories: { id: string; label: string; skills: Skill[] }[] = [
+  {
+    id: 'languages',
+    label: 'Languages',
+    skills: [
+      { name: 'Python', icon: <FaPython />, color: '#3776AB' },
+      { name: 'TypeScript', icon: <SiTypescript />, color: '#3178C6' },
+      { name: 'JavaScript', icon: <FaJs />, color: '#F7DF1E' },
+      { name: 'SQL', icon: <FaDatabase />, color: '#4479A1' },
+      { name: 'PL/SQL', icon: <FaDatabase />, color: '#F80000' },
+    ],
+  },
+  {
+    id: 'frameworks',
+    label: 'Frameworks',
+    skills: [
+      { name: 'React.js', icon: <FaReact />, color: '#61DAFB' },
+      { name: 'Next.js', icon: <SiNextdotjs />, color: '#aaaaaa' },
+      { name: 'Node.js', icon: <FaNodeJs />, color: '#339933' },
+      { name: 'NestJS', icon: <SiNestjs />, color: '#E0234E' },
+      { name: 'FastAPI', icon: <SiFastapi />, color: '#009688' },
+      { name: 'Vite', icon: <SiVite />, color: '#646CFF' },
+      { name: 'Tailwind CSS', icon: <SiTailwindcss />, color: '#38B2AC' },
+    ],
+  },
+  {
+    id: 'ai',
+    label: 'AI / ML',
+    skills: [
+      { name: 'OpenAI GPT-4', icon: <SiOpenai />, color: '#74aa9c' },
+      { name: 'LangChain', icon: <SiLangchain />, color: '#65d4a2' },
+      { name: 'RAG', icon: <FaBrain />, color: 'var(--link)' },
+      { name: 'Pinecone / FAISS', icon: <FaDatabase />, color: 'var(--accent-soft)' },
+      { name: 'Prompt Engineering', icon: <FaRobot />, color: '#f472b6' },
+      { name: 'Hugging Face', icon: <SiHuggingface />, color: '#FFD21E' },
+    ],
+  },
+  {
+    id: 'cloud',
+    label: 'Cloud & DevOps',
+    skills: [
+      { name: 'AWS', icon: <FaAws />, color: '#FF9900' },
+      { name: 'Docker', icon: <FaDocker />, color: '#2496ED' },
+      { name: 'Kubernetes', icon: <SiKubernetes />, color: '#326CE5' },
+      { name: 'Terraform', icon: <SiTerraform />, color: '#7B42BC' },
+      { name: 'GitHub Actions', icon: <SiGithubactions />, color: '#2088FF' },
+      { name: 'CI/CD', icon: <AiOutlineApi />, color: 'var(--accent-strong)' },
+    ],
+  },
+  {
+    id: 'databases',
+    label: 'Databases',
+    skills: [
+      { name: 'PostgreSQL', icon: <SiPostgresql />, color: '#5d87ab' },
+      { name: 'Oracle', icon: <SiOracle />, color: '#F80000' },
+      { name: 'MongoDB', icon: <SiMongodb />, color: '#47A248' },
+      { name: 'MySQL', icon: <SiMysql />, color: '#4479A1' },
+      { name: 'Redis', icon: <SiRedis />, color: '#DC382D' },
+    ],
+  },
+  {
+    id: 'testing',
+    label: 'Testing & QA',
+    skills: [
+      { name: 'Cypress', icon: <SiCypress />, color: '#4fb8a7' },
+      { name: 'Vitest', icon: <SiVitest />, color: '#6E9F18' },
+      { name: 'Jest', icon: <SiJest />, color: '#C21325' },
+      { name: 'Pytest', icon: <SiPytest />, color: '#0A9EDC' },
+      { name: 'TDD', icon: <AiOutlineApi />, color: 'var(--link)' },
+    ],
+  },
+];
+
+function SkillChip({ skill, order }: { skill: Skill; order: number }) {
   return (
-    <div 
-      className="relative p-2 rounded-md shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md"
-      style={getGradientStyle()}
+    <div
+      className="flex items-center gap-2 rounded-xl font-medium transition-all duration-250"
+      style={{
+        padding: '0.5rem 0.9rem',
+        background: `${skill.color}14`,
+        border: `1px solid ${skill.color}28`,
+        color: skill.color,
+        fontSize: '0.82rem',
+        cursor: 'default',
+        animation: `scale-in 0.45s cubic-bezier(0.16,1,0.3,1) ${order * 0.04}s both`,
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLElement).style.background = `${skill.color}25`;
+        (e.currentTarget as HTMLElement).style.borderColor = `${skill.color}50`;
+        (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)';
+        (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 20px ${skill.color}25`;
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.background = `${skill.color}14`;
+        (e.currentTarget as HTMLElement).style.borderColor = `${skill.color}28`;
+        (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+        (e.currentTarget as HTMLElement).style.boxShadow = 'none';
+      }}
     >
-      <div className="flex items-center gap-2">
-        {/* Icon container */}
-        <div className="bg-white/20 backdrop-blur-sm p-1 rounded-full text-white">
-          {icon}
-        </div>
-        
-        {/* Skill name */}
-        <span className="font-medium text-white text-sm">{name}</span>
+      <span style={{ fontSize: '1rem' }}>{skill.icon}</span>
+      {skill.name}
+    </div>
+  );
+}
+
+const Skills: React.FC = () => {
+  const [active, setActive] = useState<string>('all');
+  const ref = useReveal(0.08);
+
+  const displayed =
+    active === 'all' ? allCategories : allCategories.filter((c) => c.id === active);
+
+  return (
+    <div ref={ref} className="reveal">
+      {/* Filter tabs */}
+      <div className="flex flex-wrap gap-2 mb-8">
+        <button
+          onClick={() => setActive('all')}
+          className="font-medium rounded-full transition-all duration-200"
+          style={{
+            padding: '0.35rem 1rem',
+            fontSize: '0.82rem',
+            background: active === 'all' ? 'linear-gradient(135deg,var(--accent),var(--accent-strong))' : 'var(--glass-mid)',
+            color: active === 'all' ? 'var(--btn-text)' : 'var(--text-muted)',
+            border: active === 'all' ? 'none' : '1px solid var(--glass-border)',
+            boxShadow: active === 'all' ? '0 0 16px rgba(var(--accent-rgb),0.35)' : 'none',
+          }}
+        >
+          All
+        </button>
+        {allCategories.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => setActive(cat.id)}
+            className="font-medium rounded-full transition-all duration-200"
+            style={{
+              padding: '0.35rem 1rem',
+              fontSize: '0.82rem',
+              background: active === cat.id ? 'linear-gradient(135deg,var(--accent),var(--accent-strong))' : 'var(--glass-mid)',
+              color: active === cat.id ? 'var(--btn-text)' : 'var(--text-muted)',
+              border: active === cat.id ? 'none' : '1px solid var(--glass-border)',
+              boxShadow: active === cat.id ? '0 0 16px rgba(var(--accent-rgb),0.35)' : 'none',
+            }}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Skills grid */}
+      <div className="space-y-6">
+        {displayed.map((cat) => (
+          <div key={cat.id}>
+            <h3
+              className="font-semibold mb-3"
+              style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.12em' }}
+            >
+              {cat.label}
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {cat.skills.map((skill, i) => (
+                <SkillChip key={`${active}-${skill.name}`} skill={skill} order={i} />
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-const Skills: React.FC = () => {
-  const programmingSkills = [
-    { name: 'JavaScript', icon: <FaJs size={20} />, color: '#F7DF1E' },
-    { name: 'Python', icon: <FaPython size={20} />, color: '#3776AB' },
-    { name: 'SQL', icon: <FaDatabase size={20} />, color: '#4479A1' },
-  ];
-
-  const frontendSkills = [
-    { name: 'React.js', icon: <FaReact size={20} />, color: '#61DAFB' },
-    { name: 'AngularJS', icon: <FaAngular size={20} />, color: '#DD0031' },
-    { name: 'HTML/CSS', icon: <><FaHtml5 size={18} /><FaCss3Alt size={18} /></>, color: '#E34F26' },
-    { name: 'Tailwind CSS', icon: <SiTailwindcss size={20} />, color: '#38B2AC' },
-  ];
-
-  const backendSkills = [
-    { name: 'NestJS', icon: <SiNestjs size={20} />, color: '#E0234E' },
-    { name: 'REST APIs', icon: <AiOutlineApi size={20} />, color: '#0096FF' },
-    { name: 'Express.js', icon: <SiExpress size={20} />, color: '#000000' },
-    { name: 'Node.js', icon: <FaNodeJs size={20} />, color: '#339933' },
-  ];
-
-  const databaseTools = [
-    { name: 'PostgreSQL', icon: <SiPostgresql size={20} />, color: '#336791' },
-    { name: 'MongoDB', icon: <SiMongodb size={20} />, color: '#47A248' },
-    { name: 'MySQL', icon: <SiMysql size={20} />, color: '#4479A1' },
-    { name: 'Docker', icon: <FaDocker size={20} />, color: '#2496ED' },
-  ];
-
-  // Category navigation tabs
-  const [activeCategory, setActiveCategory] = useState('all');
-
-  return (
-    <section className="mb-4">
-      {/* Skills navigation */}
-      <div className="flex flex-wrap gap-2 mb-3">
-        <button 
-          onClick={() => setActiveCategory('all')}
-          className={`px-3 py-1 text-sm rounded-full transition-all duration-300 ${
-            activeCategory === 'all' 
-              ? 'bg-indigo-600 text-white font-semibold' 
-              : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
-          }`}
-        >
-          All
-        </button>
-        <button 
-          onClick={() => setActiveCategory('programming')}
-          className={`px-3 py-1 text-sm rounded-full transition-all duration-300 ${
-            activeCategory === 'programming' 
-              ? 'bg-indigo-600 text-white font-semibold' 
-              : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
-          }`}
-        >
-          Languages
-        </button>
-        <button 
-          onClick={() => setActiveCategory('frontend')}
-          className={`px-3 py-1 text-sm rounded-full transition-all duration-300 ${
-            activeCategory === 'frontend' 
-              ? 'bg-indigo-600 text-white font-semibold' 
-              : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
-          }`}
-        >
-          Frontend
-        </button>
-        <button 
-          onClick={() => setActiveCategory('backend')}
-          className={`px-3 py-1 text-sm rounded-full transition-all duration-300 ${
-            activeCategory === 'backend' 
-              ? 'bg-indigo-600 text-white font-semibold' 
-              : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
-          }`}
-        >
-          Backend
-        </button>
-        <button 
-          onClick={() => setActiveCategory('database')}
-          className={`px-3 py-1 text-sm rounded-full transition-all duration-300 ${
-            activeCategory === 'database' 
-              ? 'bg-indigo-600 text-white font-semibold' 
-              : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
-          }`}
-        >
-          DB/Tools
-        </button>
-      </div>
-      
-      {/* Skills grid display */}
-      <div className="grid gap-3">
-        {/* Programming Languages */}
-        {(activeCategory === 'all' || activeCategory === 'programming') && (
-          <div className="transition-all duration-500">
-            <h3 className="text-sm font-bold mb-2 text-indigo-600 dark:text-indigo-400">
-              <span className="mr-1">💻</span> Programming Languages
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-              {programmingSkills.map(skill => (
-                <SkillTile 
-                  key={skill.name} 
-                  name={skill.name} 
-                  icon={skill.icon}
-                  color={skill.color}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-        
-        {/* Frontend */}
-        {(activeCategory === 'all' || activeCategory === 'frontend') && (
-          <div className="transition-all duration-500">
-            <h3 className="text-sm font-bold mb-2 text-indigo-600 dark:text-indigo-400">
-              <span className="mr-1">🎨</span> Frontend Development
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-              {frontendSkills.map(skill => (
-                <SkillTile 
-                  key={skill.name} 
-                  name={skill.name} 
-                  icon={skill.icon}
-                  color={skill.color}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-        
-        {/* Backend */}
-        {(activeCategory === 'all' || activeCategory === 'backend') && (
-          <div className="transition-all duration-500">
-            <h3 className="text-sm font-bold mb-2 text-indigo-600 dark:text-indigo-400">
-              <span className="mr-1">⚙️</span> Backend Development
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-              {backendSkills.map(skill => (
-                <SkillTile 
-                  key={skill.name} 
-                  name={skill.name} 
-                  icon={skill.icon}
-                  color={skill.color}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-        
-        {/* Databases & Tools */}
-        {(activeCategory === 'all' || activeCategory === 'database') && (
-          <div className="transition-all duration-500">
-            <h3 className="text-sm font-bold mb-2 text-indigo-600 dark:text-indigo-400">
-              <span className="mr-1">🔧</span> Databases & Tools
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-              {databaseTools.map(skill => (
-                <SkillTile 
-                  key={skill.name} 
-                  name={skill.name} 
-                  icon={skill.icon}
-                  color={skill.color}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </section>
-  );
-};
-
-export default Skills; 
+export default Skills;

@@ -17,8 +17,10 @@ import Footer from './Footer';
 import HeroSection from './HeroSection';
 import SectionContainer from './SectionContainer';
 import StyleProvider from './StyleProvider';
+import FloatingParticles from './FloatingParticles';
+import Stats from './Stats';
+import LiquidBackground from './LiquidBackground';
 
-// Export all components with proper TypeScript typing
 export {
   Summary as SummaryComponent,
   Experience as ExperienceComponent,
@@ -38,5 +40,8 @@ export {
   Footer as FooterComponent,
   HeroSection as HeroSectionComponent,
   SectionContainer,
-  StyleProvider
-}; 
+  StyleProvider,
+  FloatingParticles,
+  Stats,
+  LiquidBackground,
+};

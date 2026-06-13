@@ -1,233 +1,240 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { FaSun, FaMoon, FaUser, FaBars, FaTimes } from 'react-icons/fa';
+import { FaBars, FaTimes, FaSun, FaMoon } from 'react-icons/fa';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState('summary');
+  const [activeSection, setActiveSection] = useState('hero');
+  const [isDark, setIsDark] = useState(() =>
+    typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : true
+  );
 
-  // Debounce function to limit the rate at which a function can fire
-  const debounce = useCallback((func: () => void, wait: number): () => void => {
-    let timeout: NodeJS.Timeout;
-    return () => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func(), wait);
-    };
-  }, []);
-
-  // Use debounced scroll handler
   useEffect(() => {
-    const handleScroll = debounce(() => {
-      // Update navbar background on scroll
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-      
-      // Determine active section based on scroll position
-      const sections = ['summary', 'experience', 'projects', 'skills', 'education', 'contact'];
-      
-      for (const sectionId of sections) {
-        const section = document.getElementById(sectionId);
-        if (section) {
-          const rect = section.getBoundingClientRect();
-          // If the section is in view (with some buffer for better UX)
-          if (rect.top <= 100 && rect.bottom >= 100) {
-            setActiveSection(sectionId);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 60);
+
+      const sections = ['hero', 'experience', 'projects', 'skills', 'education', 'contact'];
+      for (const id of sections) {
+        const el = document.getElementById(id);
+        if (el) {
+          const { top, bottom } = el.getBoundingClientRect();
+          if (top <= 120 && bottom >= 100) {
+            setActiveSection(id);
             break;
           }
         }
       }
-    }, 100);
-
-    window.addEventListener('scroll', handleScroll);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [debounce]);
-
-  // Check for saved theme preference or system preference
-  useEffect(() => {
-    // Check if user previously selected dark mode
-    if (localStorage.getItem('darkMode') === 'true' || 
-        (!localStorage.getItem('darkMode') && 
-         window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      setIsDarkMode(true);
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
   }, []);
 
-  // Close mobile menu when window is resized to desktop size
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768 && isMenuOpen) {
-        setIsMenuOpen(false);
-      }
-    };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    if (window.innerWidth >= 768 && isMenuOpen) setIsMenuOpen(false);
   }, [isMenuOpen]);
 
-  // Toggle dark mode
-  const toggleDarkMode = useCallback(() => {
-    setIsDarkMode(!isDarkMode);
-    if (isDarkMode) {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('darkMode', 'false');
-    } else {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('darkMode', 'true');
-    }
-  }, [isDarkMode]);
-
-  // Smooth scroll to section
-  const scrollToSection = useCallback((sectionId: string) => {
-    const section = document.getElementById(sectionId);
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
-      setActiveSection(sectionId);
-      setIsMenuOpen(false);
-    }
+  const toggleTheme = useCallback(() => {
+    const next = !document.documentElement.classList.contains('dark');
+    document.documentElement.classList.toggle('dark', next);
+    localStorage.setItem('theme', next ? 'dark' : 'light');
+    setIsDark(next);
   }, []);
 
-  // Memoize navigation items to prevent unnecessary re-renders
-  const navItems = useMemo(() => [
-    { id: 'summary', label: 'Summary' },
-    { id: 'experience', label: 'Experience' },
-    { id: 'projects', label: 'Projects' },
-    { id: 'skills', label: 'Skills' },
-    { id: 'education', label: 'Education' },
-    { id: 'contact', label: 'Contact' }
-  ], []);
+  const scrollTo = useCallback((id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    setActiveSection(id);
+    setIsMenuOpen(false);
+  }, []);
+
+  const navItems = useMemo(
+    () => [
+      { id: 'hero', label: 'Home' },
+      { id: 'experience', label: 'Experience' },
+      { id: 'projects', label: 'Projects' },
+      { id: 'skills', label: 'Skills' },
+      { id: 'education', label: 'Education' },
+      { id: 'contact', label: 'Contact' },
+    ],
+    []
+  );
+
+  const themeButton = (
+    <button
+      onClick={toggleTheme}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      className="flex items-center justify-center transition-all duration-300"
+      style={{
+        width: '34px',
+        height: '34px',
+        borderRadius: '0.6rem',
+        background: 'var(--glass-mid)',
+        border: '1px solid var(--glass-border)',
+        color: 'var(--text-secondary)',
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLElement).style.background = 'rgba(var(--accent-rgb),0.18)';
+        (e.currentTarget as HTMLElement).style.color = 'var(--text-primary)';
+        (e.currentTarget as HTMLElement).style.transform = 'rotate(18deg)';
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.background = 'var(--glass-mid)';
+        (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
+        (e.currentTarget as HTMLElement).style.transform = 'rotate(0deg)';
+      }}
+    >
+      {isDark ? <FaSun size={14} /> : <FaMoon size={13} />}
+    </button>
+  );
 
   return (
-    <header className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 dark:bg-gray-900/90 shadow-md backdrop-blur-sm' : 'bg-transparent'}`}>
-      <nav className="px-4 md:px-6 py-4 max-w-7xl mx-auto">
-        {/* Desktop Navigation - New Layout */}
+    <header
+      className="fixed top-0 w-full z-50 flex justify-center"
+      style={{ paddingTop: isScrolled ? '12px' : '20px', paddingLeft: '1rem', paddingRight: '1rem' }}
+    >
+      <nav
+        className="w-full max-w-4xl transition-all duration-500"
+        style={{
+          background: isScrolled ? 'rgba(var(--nav-rgb), 0.85)' : 'transparent',
+          backdropFilter: isScrolled ? 'blur(30px)' : 'none',
+          WebkitBackdropFilter: isScrolled ? 'blur(30px)' : 'none',
+          border: isScrolled ? '1px solid var(--glass-border)' : '1px solid transparent',
+          borderRadius: '1rem',
+          padding: '0.6rem 1.5rem',
+          boxShadow: isScrolled ? 'var(--shadow-nav)' : 'none',
+        }}
+      >
+        {/* Desktop */}
         <div className="hidden md:flex items-center justify-between">
-          {/* Left Navigation Items */}
-          <div className="flex space-x-6">
-            {navItems.slice(0, 3).map(item => (
-              <button 
+          <button
+            onClick={() => scrollTo('hero')}
+            className="font-black text-base tracking-wider gradient-text"
+          >
+            SP
+          </button>
+
+          <div className="flex items-center" style={{ gap: '2px' }}>
+            {navItems.map((item) => (
+              <button
                 key={item.id}
-                onClick={() => scrollToSection(item.id)} 
-                className={`relative py-1 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 ${
-                  activeSection === item.id ? 'text-indigo-600 dark:text-indigo-400 font-medium' : ''
-                }`}
-                aria-current={activeSection === item.id ? 'page' : undefined}
+                onClick={() => scrollTo(item.id)}
+                className="relative font-medium transition-all duration-200"
+                style={{
+                  padding: '0.4rem 0.85rem',
+                  borderRadius: '0.6rem',
+                  fontSize: '0.875rem',
+                  color: activeSection === item.id ? 'var(--text-primary)' : 'var(--text-secondary)',
+                  background:
+                    activeSection === item.id
+                      ? 'rgba(var(--accent-rgb),0.2)'
+                      : 'transparent',
+                  border:
+                    activeSection === item.id
+                      ? '1px solid rgba(var(--accent-rgb),0.35)'
+                      : '1px solid transparent',
+                }}
+                onMouseEnter={(e) => {
+                  if (activeSection !== item.id)
+                    (e.currentTarget as HTMLElement).style.color = 'var(--text-primary)';
+                }}
+                onMouseLeave={(e) => {
+                  if (activeSection !== item.id)
+                    (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
+                }}
               >
                 {item.label}
-                {activeSection === item.id && (
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 dark:bg-indigo-400 transform transition-transform duration-300"></span>
-                )}
               </button>
             ))}
           </div>
-          
-          {/* Center Logo/Avatar */}
-          <div className="flex items-center">
-            <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center cursor-pointer transition-transform duration-300 ease-in-out hover:scale-105" onClick={() => scrollToSection('summary')}>
-              <FaUser size={20} color="currentColor" />
-            </div>
-          </div>
-          
-          {/* Right Navigation Items */}
-          <div className="flex items-center space-x-6">
-            {navItems.slice(3).map(item => (
-              <button 
-                key={item.id}
-                onClick={() => scrollToSection(item.id)} 
-                className={`relative py-1 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 ${
-                  activeSection === item.id ? 'text-indigo-600 dark:text-indigo-400 font-medium' : ''
-                }`}
-                aria-current={activeSection === item.id ? 'page' : undefined}
-              >
-                {item.label}
-                {activeSection === item.id && (
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 dark:bg-indigo-400 transform transition-transform duration-300"></span>
-                )}
-              </button>
-            ))}
-            
-            {/* Dark Mode Toggle */}
-            <button 
-              onClick={toggleDarkMode}
-              className="p-2 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 bg-gray-100 dark:bg-gray-800 rounded-full"
-              aria-label="Toggle dark mode"
+
+          <div className="flex items-center gap-2">
+            {themeButton}
+            <a
+              href={`${import.meta.env.BASE_URL}Sashank_Punyamurthy_Resume.pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 font-semibold transition-all duration-200"
+              style={{
+                padding: '0.4rem 1rem',
+                borderRadius: '0.6rem',
+                fontSize: '0.8rem',
+                color: 'var(--btn-text)',
+                background: 'linear-gradient(135deg, var(--accent), var(--accent-strong))',
+                boxShadow: '0 0 20px rgba(var(--accent-rgb),0.3)',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow = '0 0 30px rgba(var(--accent-rgb),0.5)';
+                (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow = '0 0 20px rgba(var(--accent-rgb),0.3)';
+                (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+              }}
             >
-              {isDarkMode ? (
-                <FaSun size={20} />
-              ) : (
-                <FaMoon size={20} />
-              )}
-            </button>
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Resume
+            </a>
           </div>
         </div>
-        
-        {/* Mobile Navigation Header */}
+
+        {/* Mobile */}
         <div className="flex md:hidden items-center justify-between">
-          <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center cursor-pointer transition-transform duration-300 ease-in-out hover:scale-105" onClick={() => scrollToSection('summary')}>
-            <FaUser size={16} color="currentColor" />
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <button 
-              onClick={toggleDarkMode}
-              className="p-2 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
-              aria-label="Toggle dark mode"
-            >
-              {isDarkMode ? (
-                <FaSun size={20} />
-              ) : (
-                <FaMoon size={20} />
-              )}
-            </button>
-            
+          <button onClick={() => scrollTo('hero')} className="font-black gradient-text">
+            SP
+          </button>
+          <div className="flex items-center gap-2">
+            {themeButton}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={isMenuOpen}
+              style={{ color: 'var(--text-secondary)', padding: '0.25rem' }}
             >
-              {isMenuOpen ? (
-                <FaTimes size={24} />
-              ) : (
-                <FaBars size={24} />
-              )}
+              {isMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation Menu */}
-        <div 
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-            isMenuOpen ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'
-          }`}
-          aria-hidden={!isMenuOpen}
-        >
-          <div className="space-y-3 pb-3 border-t border-gray-200 dark:border-gray-700 pt-3">
-            {navItems.map(item => (
-              <button 
+        {isMenuOpen && (
+          <div className="md:hidden" style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--glass-mid)' }}>
+            {navItems.map((item) => (
+              <button
                 key={item.id}
-                onClick={() => scrollToSection(item.id)} 
-                className={`block py-2 w-full text-left transition-colors duration-200 ${
-                  activeSection === item.id 
-                    ? 'text-indigo-600 dark:text-indigo-400 font-medium' 
-                    : 'text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400'
-                }`}
-                aria-current={activeSection === item.id ? 'page' : undefined}
+                onClick={() => scrollTo(item.id)}
+                className="block w-full text-left transition-colors duration-200"
+                style={{
+                  padding: '0.6rem 0.75rem',
+                  borderRadius: '0.5rem',
+                  fontSize: '0.9rem',
+                  color: activeSection === item.id ? 'var(--link)' : 'var(--text-secondary)',
+                  background:
+                    activeSection === item.id ? 'rgba(var(--accent-rgb),0.1)' : 'transparent',
+                  marginBottom: '2px',
+                }}
               >
                 {item.label}
               </button>
             ))}
+            <a
+              href={`${import.meta.env.BASE_URL}Sashank_Punyamurthy_Resume.pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-center font-semibold"
+              style={{
+                marginTop: '0.5rem',
+                padding: '0.6rem',
+                borderRadius: '0.5rem',
+                color: 'var(--btn-text)',
+                background: 'linear-gradient(135deg, var(--accent), var(--accent-strong))',
+                fontSize: '0.875rem',
+              }}
+            >
+              Download Resume
+            </a>
           </div>
-        </div>
+        )}
       </nav>
     </header>
   );
 };
 
-export default Navbar; 
+export default Navbar;

@@ -4,13 +4,15 @@ const Summary: React.FC = () => {
   return (
     <section className="mb-8">
       <h2 className="section-title">Summary</h2>
-      <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-        I am a Full Stack Software Engineer specializing in the development of scalable, high-performance web applications.
-        Currently, I am contracted at Experian, where I design and implement end-to-end solutions using React.js, NestJS, Prisma,
-        and Vite, ensuring seamless integration of both front-end and back-end components. I focus on creating innovative, user-
-        friendly applications. I am committed to continuous learning and improvement, always seeking new challenges to enhance my
-        development skills and processes.
-      </p>
+      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 p-6 rounded-lg border-l-4 border-indigo-600">
+        <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
+          I'm a passionate Full Stack Software Engineer with over three years of experience building and deploying robust web
+          applications. I love bringing ideas to life, from crafting clean, intelligent front-end architectures with React.js and TypeScript
+          to building scalable APIs with NestJS. I'm a firm believer in the power of automation and DevOps, and I've honed my skills
+          with Docker, Kubernetes (AKS), and Azure DevOps to streamline CI/CD pipelines and ensure seamless delivery. I'm always
+          eager to collaborate and find innovative solutions that make a real, measurable impact.
+        </p>
+      </div>
     </section>
   );
 };
