@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local tooling artifacts
+.claude/
+.cursor/
+graphify-out/
+tsconfig.tsbuildinfo
