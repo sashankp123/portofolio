@@ -101,7 +101,7 @@ const Header: React.FC = () => {
               sashank0409@gmail.com
             </a>
             <a
-              href="tel:5135440885"
+              href="tel:+15135440885"
               className="flex items-center gap-1.5 transition-colors duration-200"
               style={{ color: 'var(--text-muted)' }}
               onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--link)')}
