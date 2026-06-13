@@ -91,27 +91,30 @@ const allCategories: { id: string; label: string; skills: Skill[] }[] = [
 ];
 
 function SkillChip({ skill, order }: { skill: Skill; order: number }) {
+  // color-mix works for both hex brand colors and CSS-var palette colors
+  const tint = (pct: number) => `color-mix(in srgb, ${skill.color} ${pct}%, transparent)`;
+
   return (
     <div
       className="flex items-center gap-2 rounded-xl font-medium transition-all duration-250"
       style={{
         padding: '0.5rem 0.9rem',
-        background: `${skill.color}14`,
-        border: `1px solid ${skill.color}28`,
+        background: tint(8),
+        border: `1px solid ${tint(16)}`,
         color: skill.color,
         fontSize: '0.82rem',
         cursor: 'default',
         animation: `scale-in 0.45s cubic-bezier(0.16,1,0.3,1) ${order * 0.04}s both`,
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.background = `${skill.color}25`;
-        (e.currentTarget as HTMLElement).style.borderColor = `${skill.color}50`;
+        (e.currentTarget as HTMLElement).style.background = tint(15);
+        (e.currentTarget as HTMLElement).style.borderColor = tint(31);
         (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)';
-        (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 20px ${skill.color}25`;
+        (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 20px ${tint(15)}`;
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.background = `${skill.color}14`;
-        (e.currentTarget as HTMLElement).style.borderColor = `${skill.color}28`;
+        (e.currentTarget as HTMLElement).style.background = tint(8);
+        (e.currentTarget as HTMLElement).style.borderColor = tint(16);
         (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
         (e.currentTarget as HTMLElement).style.boxShadow = 'none';
       }}

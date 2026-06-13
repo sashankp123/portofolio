@@ -15,6 +15,15 @@
     <meta name="description" content="Sashank Punyamurthy - Software Engineer Portfolio showcasing projects and skills" />
     <meta name="theme-color" content="#445E4F" />
     <title>Sashank Punyamurthy | Software Engineer Portfolio</title>
+    <!-- Set theme before first paint to avoid a light-mode flash -->
+    <script>
+      try {
+        var t = localStorage.getItem('theme');
+        if (t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

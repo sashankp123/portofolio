@@ -90,6 +90,39 @@ const WelcomePage: React.FC<WelcomePageProps> = ({ onToggle }) => {
     setTimeout(onToggle, 650);
   };
 
+  // "Scroll to explore" must actually work: wheel, swipe, or key enters the portfolio
+  useEffect(() => {
+    let entered = false;
+    const enter = () => {
+      if (entered) return;
+      entered = true;
+      onToggle();
+    };
+    const onWheel = (e: WheelEvent) => {
+      if (e.deltaY > 12) enter();
+    };
+    let touchStartY = 0;
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (touchStartY - e.touches[0].clientY > 36) enter();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (['ArrowDown', 'PageDown', ' ', 'Enter'].includes(e.key)) enter();
+    };
+    window.addEventListener('wheel', onWheel, { passive: true });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [onToggle]);
+
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />

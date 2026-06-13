@@ -22,6 +22,11 @@ const CursorGlow: React.FC = () => {
     let gx = x, gy = y;   // glow (slower)
     let raf = 0;
 
+    // Park everything at center until the first real mousemove
+    if (dotRef.current) dotRef.current.style.transform = `translate(${x}px, ${y}px)`;
+    if (ringRef.current) ringRef.current.style.transform = `translate(${x}px, ${y}px)`;
+    if (glowRef.current) glowRef.current.style.transform = `translate(${x}px, ${y}px)`;
+
     const onMove = (e: MouseEvent) => {
       x = e.clientX;
       y = e.clientY;

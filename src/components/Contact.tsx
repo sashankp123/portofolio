@@ -14,12 +14,19 @@ const Contact: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    // No backend — compose the message in the visitor's email app so it actually arrives
+    const stars = '⭐'.repeat(Math.max(1, Math.min(5, Number(form.rating) || 5)));
+    const subject = encodeURIComponent(`Portfolio message from ${form.name.trim() || 'a visitor'}`);
+    const body = encodeURIComponent(
+      `${form.feedback}\n\n— ${form.name.trim() || 'Anonymous'}\nRating: ${stars} (${form.rating}/5)`
+    );
+    window.location.href = `mailto:sashank0409@gmail.com?subject=${subject}&body=${body}`;
     setTimeout(() => {
       setSubmitting(false);
       setSuccess(true);
       setForm({ name: '', rating: '5', feedback: '' });
-      setTimeout(() => setSuccess(false), 5000);
-    }, 1400);
+      setTimeout(() => setSuccess(false), 6000);
+    }, 900);
   };
 
   const inputStyle: React.CSSProperties = {
@@ -223,7 +230,7 @@ const Contact: React.FC = () => {
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
-              Message received — thank you!
+              Opening your email app — just hit send!
             </span>
           )}
         </div>

@@ -36,7 +36,11 @@ const Navbar: React.FC = () => {
   const toggleTheme = useCallback(() => {
     const next = !document.documentElement.classList.contains('dark');
     document.documentElement.classList.toggle('dark', next);
-    localStorage.setItem('theme', next ? 'dark' : 'light');
+    try {
+      localStorage.setItem('theme', next ? 'dark' : 'light');
+    } catch {
+      /* private mode — theme still applies for this visit */
+    }
     setIsDark(next);
   }, []);
 
@@ -94,13 +98,13 @@ const Navbar: React.FC = () => {
       <nav
         className="w-full max-w-4xl transition-all duration-500"
         style={{
-          background: isScrolled ? 'rgba(var(--nav-rgb), 0.85)' : 'transparent',
-          backdropFilter: isScrolled ? 'blur(30px)' : 'none',
-          WebkitBackdropFilter: isScrolled ? 'blur(30px)' : 'none',
-          border: isScrolled ? '1px solid var(--glass-border)' : '1px solid transparent',
+          background: isScrolled || isMenuOpen ? 'rgba(var(--nav-rgb), 0.85)' : 'transparent',
+          backdropFilter: isScrolled || isMenuOpen ? 'blur(30px)' : 'none',
+          WebkitBackdropFilter: isScrolled || isMenuOpen ? 'blur(30px)' : 'none',
+          border: isScrolled || isMenuOpen ? '1px solid var(--glass-border)' : '1px solid transparent',
           borderRadius: '1rem',
           padding: '0.6rem 1.5rem',
-          boxShadow: isScrolled ? 'var(--shadow-nav)' : 'none',
+          boxShadow: isScrolled || isMenuOpen ? 'var(--shadow-nav)' : 'none',
         }}
       >
         {/* Desktop */}

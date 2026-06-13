@@ -23,15 +23,17 @@ const TypeWriter: React.FC<TypeWriterProps> = ({
 
   useEffect(() => {
     const currentFullText = texts[currentTextIndex];
-    
+    const clear = () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+
     if (isWaiting) {
       // Wait before deleting
       timeoutRef.current = setTimeout(() => {
         setIsWaiting(false);
         setIsDeleting(true);
       }, delayBetweenTexts);
-      
-      return;
+      return clear;
     }
 
     if (!isDeleting && displayText === currentFullText) {
@@ -58,9 +60,7 @@ const TypeWriter: React.FC<TypeWriterProps> = ({
       setDisplayText(nextChar);
     }, timeout);
 
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
+    return clear;
   }, [currentTextIndex, delayBetweenTexts, deletingSpeed, displayText, isDeleting, isWaiting, texts, typingSpeed]);
 
   return (

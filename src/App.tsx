@@ -17,7 +17,7 @@ import BackToTop from './components/BackToTop';
 import Marquee from './components/Marquee';
 import './index.css';
 
-function WaveDivider({ flip = false, opacity = 0.6 }: { flip?: boolean; opacity?: number }) {
+function WaveDivider({ flip = false }: { flip?: boolean }) {
   return (
     <div
       style={{
@@ -35,9 +35,10 @@ function WaveDivider({ flip = false, opacity = 0.6 }: { flip?: boolean; opacity?
         preserveAspectRatio="none"
         style={{ display: 'block', width: '100%', height: '55px' }}
       >
+        {/* Fill must equal the section band color exactly or a seam shows */}
         <path
           d="M0,35 C240,70 480,0 720,35 C960,70 1200,0 1440,35 L1440,70 L0,70 Z"
-          fill={`rgba(var(--surface-rgb), ${opacity})`}
+          fill="var(--bg-section)"
         />
       </svg>
     </div>
@@ -94,9 +95,15 @@ function SectionHeading({ number, title }: { number: string; title: string }) {
 function App() {
   const [showWelcome, setShowWelcome] = useState(true);
 
-  // Theme: saved preference wins, otherwise follow the system
+  // Theme: saved preference wins, otherwise follow the system.
+  // (index.html applies this pre-paint; this re-sync covers HMR and private-mode storage errors.)
   useEffect(() => {
-    const saved = localStorage.getItem('theme');
+    let saved: string | null = null;
+    try {
+      saved = localStorage.getItem('theme');
+    } catch {
+      /* storage unavailable (private mode) — fall back to system */
+    }
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     document.documentElement.classList.toggle('dark', saved ? saved === 'dark' : prefersDark);
   }, []);
